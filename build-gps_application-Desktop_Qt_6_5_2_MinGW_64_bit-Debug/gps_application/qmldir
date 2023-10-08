@@ -1,0 +1,5 @@
+module gps_application
+typeinfo appgps_application.qmltypes
+prefer :/gps_application/
+Main 1.0 Main.qml
+

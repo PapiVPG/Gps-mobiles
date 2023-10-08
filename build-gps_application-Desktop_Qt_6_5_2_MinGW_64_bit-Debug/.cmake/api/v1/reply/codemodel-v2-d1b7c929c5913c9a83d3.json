@@ -1,0 +1,169 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f0c7fdd838e91a6a3a1a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "gps_application",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-7be5dca9d7cc9738a24e.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-49e5c25299ca88102c91.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-776f6ee1ab6c2ca71d61.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-74902c9ca0ee96f5898b.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application-Debug-d52be864b18250277aeb.json",
+					"name" : "appgps_application",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_autogen-Debug-b8ba1fb74c67d91afe0d.json",
+					"name" : "appgps_application_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_autogen_timestamp_deps-Debug-1df863346c26367b2fa7.json",
+					"name" : "appgps_application_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_qmlimportscan-Debug-8acf251475eb2e64264e.json",
+					"name" : "appgps_application_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_qmllint-Debug-a2f6e130112735bd1382.json",
+					"name" : "appgps_application_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_qmllint_json-Debug-540fd63a250f55e1a5e4.json",
+					"name" : "appgps_application_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_qmllint_module-Debug-086c9403fce4a7b6d9ea.json",
+					"name" : "appgps_application_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_qmltyperegistration-Debug-910671962bbeb2d95a9c.json",
+					"name" : "appgps_application_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appgps_application_tooling::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appgps_application_tooling-Debug-6cbb7d10826c0e2d23a6.json",
+					"name" : "appgps_application_tooling",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/MyRepo/Gps-mobiles/build-gps_application-Desktop_Qt_6_5_2_MinGW_64_bit-Debug",
+		"source" : "C:/MyRepo/Gps-mobiles/gps_application"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
