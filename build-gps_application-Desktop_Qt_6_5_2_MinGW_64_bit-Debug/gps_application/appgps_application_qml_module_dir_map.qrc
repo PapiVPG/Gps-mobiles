@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="/gps_application">C:/MyRepo/Gps-mobiles/build-gps_application-Desktop_Qt_6_5_2_MinGW_64_bit-Debug/gps_application</file>
-
-  </qresource>
-</RCC>
