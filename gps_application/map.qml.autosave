@@ -42,4 +42,8 @@ Rectangle{
         latitude = lati
         longitude = longi
     }
+    
+    function setLocationMarker(){
+        
+    }
 }
