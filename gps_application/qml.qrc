@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>map.qml</file>
+        <file>assets/Google_Maps_pin.svg.png</file>
     </qresource>
 </RCC>
