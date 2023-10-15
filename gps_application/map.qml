@@ -35,7 +35,6 @@ Rectangle{
             lastX = mouse.x
             lastY = mouse.y
         }
-//        onClicked:  lineEdit.text = ""+ map_view.toCoordinate(Qt.point(mouse.x,mouse.y))
     }
     function setCenter( lati, longi ){
         map_view.pan( latitude - lati, longitude - longi )
