@@ -17,10 +17,10 @@
    <widget class="QQuickWidget" name="quickWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>-1</x>
+      <y>-1</y>
       <width>401</width>
-      <height>581</height>
+      <height>600</height>
      </rect>
     </property>
     <property name="resizeMode">
