@@ -36,6 +36,15 @@ Window{
             text: "button"
             onClicked: routing.update()
         }
+        Button{
+            anchors {
+                right: parent.right
+                bottom: parent.bottom
+                margins: 5
+            }
+            text: navigation.active ? "Stop" : "Start Navigation"
+            onClicked: navigation.active = !navigation.active
+        }
         onRouteSelected: {
             routeCollection.mainRoute = route
             centerOnRoute( route )
@@ -43,6 +52,26 @@ Window{
     //    preferences.viewPerspective: MapViewPreferences.ViewPerspective.View3D
     //    preferences.show3DBuildings: true
     }
+
+    NavigationService {
+        id: navigation
+        route: map.routeCollection.mainRoute
+        simulation: true
+
+        onActiveChanged: {
+            if( active ){
+                map.startFollowingPosition()
+                map.routeCollection.clear()
+                map.routeCollection.add( route )
+            }
+        }
+        onDestinationReached: map.routeCollection.clear()
+        onNavigationRouteUpdated: {
+            map.routeCollection.clear()
+            map.routeCollection.add( route )
+        }
+    }
+
     RoutingService {
         id: routing
         type: Route.Type.Fastest
