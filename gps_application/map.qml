@@ -4,6 +4,7 @@ import QtLocation 5.11
 import QtPositioning 5.11
 import GeneralMagic 2.0
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 Window{
     visible: true
@@ -21,6 +22,12 @@ Window{
         updater.autoApplyWhenReady = true;
         updater.update();
     }
+
+    function distance( meters ){
+        return meters >= 1000 ? ( meters / 1000. ).toFixed( 3 ) + "km"
+                              : meters.toFixed( 0 ) + "m"
+    }
+
     MapView
     {
         id: map
@@ -45,6 +52,42 @@ Window{
             text: navigation.active ? "Stop" : "Start Navigation"
             onClicked: navigation.active = !navigation.active
         }
+        Rectangle {
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: 60
+            color: Qt.rgba( 1, 1, 1, 0.7 )
+            visible: navigation.active
+
+            RowLayout {
+                anchors.fill: parent
+
+                DynamicIconView {
+                    Layout.fillHeight: true
+                    width: height
+                    arrowInner:  "darkblue"
+                    arrowOuter: "gold"
+                    slotInner: "silver"
+                    slotOuter: "gold"
+                    iconSource: navigation.currentInstruction.nextNextTurnDynamicIcon
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    font.pixelSize: 16
+                    text: navigation.currentInstruction.nextStreetName
+                        + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
+                }
+            }
+
+        }
+
+
+
+
         onRouteSelected: {
             routeCollection.mainRoute = route
             centerOnRoute( route )
