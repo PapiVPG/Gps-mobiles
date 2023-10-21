@@ -3,31 +3,71 @@ import QtQuick.Window 2.12
 import QtLocation 5.11
 import QtPositioning 5.11
 import GeneralMagic 2.0
+import QtQuick.Controls 2.15
 
 Window{
-  visible: true
-  width: 640
-  height: 480
-  title: qsTr("Hello Map")
-  Component.onCompleted:
-  {
-    ServicesManager.settings.token = __my_secret_token;
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("Hello Map")
+    Component.onCompleted:
+    {
+        ServicesManager.settings.token = __my_secret_token;
 
-    ServicesManager.logLevel = ServicesManager.Error;
-    ServicesManager.settings.allowInternetConnection = true;
+        ServicesManager.logLevel = ServicesManager.Error;
+        ServicesManager.settings.allowInternetConnection = true;
 
-    var updater = ServicesManager.contentUpdater(ContentItem.Type.RoadMap);
-    updater.autoApplyWhenReady = true;
-    updater.update();
-  }
-  MapView
-  {
-    anchors.fill: parent
-    viewAngle: 25
-    zoomLevel: 69
-//    preferences.viewPerspective: MapViewPreferences.ViewPerspective.View3D
-//    preferences.show3DBuildings: true
-  }
+        var updater = ServicesManager.contentUpdater( ContentItem.Type.RoadMap );
+        updater.autoApplyWhenReady = true;
+        updater.update();
+    }
+    MapView
+    {
+        id: map
+        anchors.fill: parent
+        viewAngle: 25
+        zoomLevel: 69
+        Button{
+            anchors {
+                left: parent.left
+                bottom: parent.bottom
+                margins: 5
+            }
+            text: "button"
+            onClicked: routing.update()
+        }
+        onRouteSelected: {
+            routeCollection.mainRoute = route
+            centerOnRoute( route )
+        }
+    //    preferences.viewPerspective: MapViewPreferences.ViewPerspective.View3D
+    //    preferences.show3DBuildings: true
+    }
+    RoutingService {
+        id: routing
+        type: Route.Type.Fastest
+        transportMode: Route.Car
+        waypoints: LandmarkList {
+            Landmark {
+                name: "Departure"
+                coordinates: Coordinates{
+                    latitude: 52.8822568
+                    longitude: 15.5228932
+                }
+            }
+            Landmark {
+                name: "Destination"
+                coordinates: Coordinates{
+                    latitude: 48.874630
+                    longitude: 2.331512
+                }
+            }
+        }
+        onFinished: {
+            map.routeCollection.set( routeList )
+            map.centerOnRouteList( routeList )
+        }
+    }
 }
 
 //Rectangle{
