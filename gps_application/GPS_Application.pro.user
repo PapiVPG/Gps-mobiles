@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.2, 2023-10-19T21:32:52. -->
+<!-- Written by QtCreator 11.0.2, 2023-10-22T11:53:24. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -445,7 +445,7 @@
      </valuemap>
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.3">
       <value type="QString" key="BuildTargetSdk">android-31</value>
-      <value type="QString" key="BuildToolsVersion"></value>
+      <value type="QString" key="BuildToolsVersion">31.0.0</value>
       <value type="QString" key="KeystoreLocation"></value>
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Build Android APK</value>
@@ -626,6 +626,7 @@
     <value type="int" key="PE.EnvironmentAspect.Base">0</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">GPS_Application</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.AndroidRunConfiguration:C:/MyRepo/Gps-mobiles/GPS_Application/GPS_Application.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/MyRepo/Gps-mobiles/GPS_Application/GPS_Application.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>

@@ -40,6 +40,7 @@ Window{
                 bottom: parent.bottom
                 margins: 5
             }
+            enabled: !navigation.active
             text: "button"
             onClicked: routing.update()
         }
@@ -49,6 +50,7 @@ Window{
                 bottom: parent.bottom
                 margins: 5
             }
+            enabled: map.routeCollection.mainRoute.valid
             text: navigation.active ? "Stop" : "Start Navigation"
             onClicked: navigation.active = !navigation.active
         }
