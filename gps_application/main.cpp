@@ -18,13 +18,10 @@ int main(int argc, char *argv[])
             }
     }, Qt::QueuedConnection );
 
-
     engine.rootContext()->setContextProperty( "__my_secret_token" , "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIzYTE4NjY1NC01MjI4LTQ1MjgtODNkMi1jNzAxOThmZTY3MGIiLCJleHAiOjE2OTgwOTQ4MDAsImlzcyI6IkdlbmVyYWwgTWFnaWMiLCJqdGkiOiIxM2RmYWQzYy00MmI0LTQ3NDQtYjExYy1lNGRiMmM5MTU2NmQiLCJuYmYiOjE2OTc0OTA4NDJ9.k6hc3xU6ZoAtspNAqNY0hNb0uk2etTrPlCDK4AQOLtRaz6FEEA-asovijy8IpiWJjbXDJaq2bwwfSAXXNlibkQ" );
-//    MainWindow window;
-//    window.show();
-    engine.load(url);
-
-
+    MainWindow window;
+    window.show();
+    engine.load( url );
 
     return app.exec();
 }

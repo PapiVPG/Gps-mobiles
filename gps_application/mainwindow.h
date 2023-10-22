@@ -22,8 +22,5 @@ public:
 private:
     Ui::MainWindow *ui;
 
-signals:
-    void setCenter( QVariant, QVariant );
-    void setLocationMarker( QVariant, QVariant );
 };
 #endif // MAINWINDOW_H
