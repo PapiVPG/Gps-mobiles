@@ -6,8 +6,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle{
-    Component.onCompleted:
-    {
+    Component.onCompleted: {
         ServicesManager.logLevel = ServicesManager.Error;
         ServicesManager.settings.allowInternetConnection = true;
 
@@ -16,77 +15,196 @@ Rectangle{
         updater.update();
     }
 
-    function distance( meters ){
-        return meters >= 1000 ? ( meters / 1000. ).toFixed( 3 ) + "km"
-                              : meters.toFixed( 0 ) + "m"
+    Timer {
+        id: searchTimer
+        interval: 500
+        onTriggered: {
+            searchService.searchNow();
+        }
     }
 
-    MapView
-    {
+    SearchService {
+        id: searchService
+        filter: searchBar.text
+        searchMapPOIs: true
+        searchAddresses: true
+        limit: 10
+
+        function searchNow() {
+            searchTimer.stop();
+            cancel();
+            referencePoint = map.cursorWgsPosition();
+            search();
+        }
+    }
+
+
+    MapView {
         id: map
         anchors.fill: parent
         viewAngle: 25
         zoomLevel: 69
+        cursorVisibility: false
 
-        Button {
-            anchors {
-                left: parent.left
-                bottom: parent.bottom
-                margins: 5
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.topMargin: 15
+            anchors.leftMargin: 15
+            anchors.rightMargin: 15
+            anchors.bottomMargin: 30
+
+            TextField {
+                id: searchBar
+                Layout.fillWidth: true
+                placeholderText: qsTr( "Where would you like to go?" )
+                onTextChanged: searchTimer.restart()
+                onEditingFinished: searchService.searchNow()
             }
-            enabled: !navigation.active
-            text: "button"
-            onClicked: routing.update()
-        }
 
-        Button{
-            anchors {
-                right: parent.right
-                bottom: parent.bottom
-                margins: 5
-            }
-            enabled: map.routeCollection.mainRoute.valid
-            text: navigation.active ? "Stop" : "Start Navigation"
-            onClicked: navigation.active = !navigation.active
-        }
-
-        Rectangle {
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-            }
-            height: 60
-            color: Qt.rgba( 1, 1, 1, 0.7 )
-            visible: navigation.active
-
-            RowLayout {
-                anchors.fill: parent
-
-                DynamicIconView {
-                    Layout.fillHeight: true
-                    width: height
-                    arrowInner:  "darkblue"
-                    arrowOuter: "gold"
-                    slotInner: "silver"
-                    slotOuter: "gold"
-                    iconSource: navigation.currentInstruction.nextNextTurnDynamicIcon
-                }
-
-                Label {
-                    Layout.fillWidth: true
-                    font.pixelSize: 16
-                    text: { navigation.currentInstruction.nextStreetName
-                        + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
+            Rectangle {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                color: Qt.rgba( 0, 0, 0, 0.5 )
+                visible: searchBar.focus
+                ListView {
+                    id: searchList
+                    anchors.fill: parent
+                    clip: true
+                    model: searchService
+                    delegate: Item {
+                        height: row.height
+                        Rectangle {
+                            width: searchList.width
+                            height: row.height
+                            opacity: 0.6
+                            visible: searchList.currentIndex == index
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "lightsteelblue" }
+                                GradientStop { position: .5; color: "blue" }
+                                GradientStop { position: 1.0; color: "lightsteelblue" }
+                            }
+                        }
+                        RowLayout {
+                            id: row
+                            IconView {
+                                iconSource: landmark.icon
+                                Layout.maximumHeight: row.height
+                                Layout.maximumWidth: row.height
+                                width: height
+                                height: row.height
+                            }
+                            ColumnLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService.referencePoint ) ) + ")"
+                                    color: "white"
+                                    font.pixelSize: 16
+                                    wrapMode: Text.WrapAnywhere
+                                }
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: landmark.description
+                                    color: "white"
+                                    font.pixelSize: 14
+                                    font.italic: true
+                                    wrapMode: Text.WrapAnywhere
+                                }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: row
+                            onClicked: {
+                                searchList.currentIndex = index
+                                console.log( searchService.get( index ).coordinates.latitude )
+                                map.centerOnCoordinates( searchService.get( index ).coordinates, -1 );
+                                searchBar.focus = true;
+                            }
+                        }
                     }
                 }
             }
+        Item {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
+        RowLayout {
+            Button {
+                enabled: searchService.length
+                text: "Highlight list on the map "
+                onClicked:  {
+                    if ( map.zoomLevel < 65)
+                        map.zoomLevel = 65;
+                    map.highlightLandmarkList( searchService )
+                }
+            }
+            Button {
+                text: "Hide Highlighted list"
+                onClicked: map.hideHighlights()
+            }
+        }
+    }
 
-        onRouteSelected: {
-            routeCollection.mainRoute = route
-            centerOnRoute( route )
+    Button {
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
+            margins: 5
         }
+        enabled: !navigation.active
+        text: "button"
+        onClicked: routing.update()
+    }
+
+    Button {
+        anchors {
+            right: parent.right
+            bottom: parent.bottom
+            margins: 5
+        }
+        enabled: map.routeCollection.mainRoute.valid
+        text: navigation.active ? "Stop" : "Start Navigation"
+        onClicked: navigation.active = !navigation.active
+    }
+
+    Rectangle {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        height: 60
+        color: Qt.rgba( 1, 1, 1, 0.7 )
+        visible: navigation.active
+
+        RowLayout {
+            anchors.fill: parent
+
+            DynamicIconView {
+                Layout.fillHeight: true
+                width: height
+                arrowInner:  "darkblue"
+                arrowOuter: "gold"
+                slotInner: "silver"
+                slotOuter: "gold"
+                iconSource: navigation.currentInstruction.nextNextTurnDynamicIcon
+            }
+
+            Label {
+                Layout.fillWidth: true
+                font.pixelSize: 16
+                text: { navigation.currentInstruction.nextStreetName
+                    + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
+                }
+            }
+        }
+    }
+
+    onRouteSelected: {
+        routeCollection.mainRoute = route
+        centerOnRoute( route )
     }
 
     NavigationService {
@@ -123,8 +241,8 @@ Rectangle{
             Landmark {
                 name: "Destination"
                 coordinates: Coordinates{
-                    latitude: 48.874630
-                    longitude: 2.331512
+                    latitude: 52.8922568
+                    longitude: 15.5328932
                 }
             }
         }
@@ -132,5 +250,12 @@ Rectangle{
             map.routeCollection.set( routeList )
             map.centerOnRouteList( routeList )
         }
+    }
+
+
+    }
+    function distance( meters ){
+        return meters >= 1000 ? ( meters / 1000. ).toFixed( 3 ) + "km"
+                              : meters.toFixed( 0 ) + "m"
     }
 }
