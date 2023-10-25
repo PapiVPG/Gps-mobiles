@@ -6,6 +6,16 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle{
+    property int zoomValue: 70
+
+    LandmarkList {
+        id: routingWaypoints
+    }
+    Component {
+        id: landmarkComponent
+        Landmark {}
+    }
+
     Component.onCompleted: {
         ServicesManager.logLevel = ServicesManager.Error;
         ServicesManager.settings.allowInternetConnection = true;
@@ -43,7 +53,7 @@ Rectangle{
         id: map
         anchors.fill: parent
         viewAngle: 25
-        zoomLevel: 69
+        zoomLevel: zoomValue
         cursorVisibility: false
 
 
@@ -81,7 +91,7 @@ Rectangle{
                             visible: searchList.currentIndex == index
                             gradient: Gradient {
                                 GradientStop { position: 0.0; color: "lightsteelblue" }
-                                GradientStop { position: .5; color: "blue" }
+                                GradientStop { position: 0.5; color: "blue" }
                                 GradientStop { position: 1.0; color: "lightsteelblue" }
                             }
                         }
@@ -118,9 +128,12 @@ Rectangle{
                             anchors.fill: row
                             onClicked: {
                                 searchList.currentIndex = index
-                                console.log( searchService.get( index ).coordinates.latitude )
-                                map.centerOnCoordinates( searchService.get( index ).coordinates, -1 );
-                                searchBar.focus = true;
+                                var landmark = landmarkComponent.createObject( routingWaypoints );
+                                landmark.coordinates = searchService.get( index ).coordinates
+                                routingWaypoints.append( landmark );
+                                console.log( "Waypoint added" );
+                                map.centerOnCoordinates( searchService.get( index ).coordinates, zoomValue );
+                                searchBar.focus = true;                            
                             }
                         }
                     }
@@ -135,8 +148,6 @@ Rectangle{
                 enabled: searchService.length
                 text: "Highlight list on the map "
                 onClicked:  {
-                    if ( map.zoomLevel < 65)
-                        map.zoomLevel = 65;
                     map.highlightLandmarkList( searchService )
                 }
             }
@@ -153,7 +164,7 @@ Rectangle{
             bottom: parent.bottom
             margins: 5
         }
-        enabled: !navigation.active
+        enabled: !navigation.active && routingWaypoints.length > 1
         text: "button"
         onClicked: routing.update()
     }
@@ -230,22 +241,7 @@ Rectangle{
         id: routing
         type: Route.Type.Fastest
         transportMode: Route.Car
-        waypoints: LandmarkList {
-            Landmark {
-                name: "Departure"
-                coordinates: Coordinates{
-                    latitude: 52.8822568
-                    longitude: 15.5228932
-                }
-            }
-            Landmark {
-                name: "Destination"
-                coordinates: Coordinates{
-                    latitude: 52.8922568
-                    longitude: 15.5328932
-                }
-            }
-        }
+        waypoints: routingWaypoints
         onFinished: {
             map.routeCollection.set( routeList )
             map.centerOnRouteList( routeList )
