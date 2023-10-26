@@ -131,124 +131,197 @@ Rectangle{
                                 var landmark = landmarkComponent.createObject( routingWaypoints );
                                 landmark.coordinates = searchService.get( index ).coordinates
                                 routingWaypoints.append( landmark );
-                                console.log( "Waypoint added" );
                                 map.centerOnCoordinates( searchService.get( index ).coordinates, zoomValue );
-                                searchBar.focus = true;                            
+                                searchBar.focus = true;
                             }
                         }
                     }
                 }
             }
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
-        RowLayout {
-            Button {
-                enabled: searchService.length
-                text: "Highlight list on the map "
-                onClicked:  {
-                    map.highlightLandmarkList( searchService )
-                }
-            }
-            Button {
-                text: "Hide Highlighted list"
-                onClicked: map.hideHighlights()
-            }
-        }
-    }
-
-    Button {
-        anchors {
-            left: parent.left
-            bottom: parent.bottom
-            margins: 5
-        }
-        enabled: !navigation.active && routingWaypoints.length > 1
-        text: "button"
-        onClicked: routing.update()
-    }
-
-    Button {
-        anchors {
-            right: parent.right
-            bottom: parent.bottom
-            margins: 5
-        }
-        enabled: map.routeCollection.mainRoute.valid
-        text: navigation.active ? "Stop" : "Start Navigation"
-        onClicked: navigation.active = !navigation.active
-    }
-
-    Rectangle {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
-        height: 60
-        color: Qt.rgba( 1, 1, 1, 0.7 )
-        visible: navigation.active
-
-        RowLayout {
-            anchors.fill: parent
-
-            DynamicIconView {
+            Item {
                 Layout.fillHeight: true
-                width: height
-                arrowInner:  "darkblue"
-                arrowOuter: "gold"
-                slotInner: "silver"
-                slotOuter: "gold"
-                iconSource: navigation.currentInstruction.nextNextTurnDynamicIcon
+                Layout.fillWidth: true
             }
 
-            Label {
+            TextField {
+                id: searchBar_2
                 Layout.fillWidth: true
-                font.pixelSize: 16
-                text: { navigation.currentInstruction.nextStreetName
-                    + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
+                placeholderText: qsTr( "Where would you like to go?" )
+                onTextChanged: searchTimer.restart()
+                onEditingFinished: searchService.searchNow()
+            }
+
+            Rectangle {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                color: Qt.rgba( 0, 0, 0, 0.5 )
+                visible: searchBar_2.focus
+                ListView {
+                    id: searchList_2
+                    anchors.fill: parent
+                    clip: true
+                    model: searchService
+                    delegate: Item {
+                        height: row_2.height
+                        Rectangle {
+                            width: searchList_2.width
+                            height: row_2.height
+                            opacity: 0.6
+                            visible: searchList_2.currentIndex == index
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "lightsteelblue" }
+                                GradientStop { position: 0.5; color: "blue" }
+                                GradientStop { position: 1.0; color: "lightsteelblue" }
+                            }
+                        }
+                        RowLayout {
+                            id: row_2
+                            IconView {
+                                iconSource: landmark.icon
+                                Layout.maximumHeight: row_2.height
+                                Layout.maximumWidth: row_2.height
+                                width: height
+                                height: row_2.height
+                            }
+                            ColumnLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService.referencePoint ) ) + ")"
+                                    color: "white"
+                                    font.pixelSize: 16
+                                    wrapMode: Text.WrapAnywhere
+                                }
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: landmark.description
+                                    color: "white"
+                                    font.pixelSize: 14
+                                    font.italic: true
+                                    wrapMode: Text.WrapAnywhere
+                                }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: row_2
+                            onClicked: {
+                                searchList_2.currentIndex = index
+                                var landmark = landmarkComponent.createObject( routingWaypoints );
+                                landmark.coordinates = searchService.get( index ).coordinates
+                                routingWaypoints.append( landmark );
+                                map.centerOnCoordinates( searchService.get( index ).coordinates, zoomValue );
+                                searchBar_2.focus = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Button {
+                    enabled: searchService.length
+                    text: "Highlight list on the map "
+                    onClicked:  {
+                        map.highlightLandmarkList( searchService )
+                    }
+                }
+                Button {
+                    text: "Hide Highlighted list"
+                    onClicked: map.hideHighlights()
                 }
             }
         }
-    }
 
-    onRouteSelected: {
-        routeCollection.mainRoute = route
-        centerOnRoute( route )
-    }
+        Button {
+            anchors {
+                left: parent.left
+                bottom: parent.bottom
+                margins: 5
+            }
+            enabled: !navigation.active && routingWaypoints.length > 1
+            text: "button"
+            onClicked: routing.update()
+        }
 
-    NavigationService {
-        id: navigation
-        route: map.routeCollection.mainRoute
-        simulation: true
+        Button {
+            anchors {
+                right: parent.right
+                bottom: parent.bottom
+                margins: 5
+            }
+            enabled: map.routeCollection.mainRoute.valid
+            text: navigation.active ? "Stop" : "Start Navigation"
+            onClicked: navigation.active = !navigation.active
+        }
 
-        onActiveChanged: {
-            if( active ){
-                map.startFollowingPosition()
+        Rectangle {
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: 60
+            color: Qt.rgba( 1, 1, 1, 0.7 )
+            visible: navigation.active
+
+            RowLayout {
+                anchors.fill: parent
+
+                DynamicIconView {
+                    Layout.fillHeight: true
+                    width: height
+                    arrowInner:  "darkblue"
+                    arrowOuter: "gold"
+                    slotInner: "silver"
+                    slotOuter: "gold"
+                    iconSource: navigation.currentInstruction.nextNextTurnDynamicIcon
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    font.pixelSize: 16
+                    text: { navigation.currentInstruction.nextStreetName
+                        + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
+                    }
+                }
+            }
+        }
+
+        onRouteSelected: {
+            routeCollection.mainRoute = route
+            centerOnRoute( route )
+        }
+
+        NavigationService {
+            id: navigation
+            route: map.routeCollection.mainRoute
+            simulation: true
+
+            onActiveChanged: {
+                if( active ){
+                    map.startFollowingPosition()
+                    map.routeCollection.clear()
+                    map.routeCollection.add( route )
+                }
+            }
+            onDestinationReached: map.routeCollection.clear()
+            onNavigationRouteUpdated: {
                 map.routeCollection.clear()
                 map.routeCollection.add( route )
             }
         }
-        onDestinationReached: map.routeCollection.clear()
-        onNavigationRouteUpdated: {
-            map.routeCollection.clear()
-            map.routeCollection.add( route )
+
+        RoutingService {
+            id: routing
+            type: Route.Type.Fastest
+            transportMode: Route.Car
+            waypoints: routingWaypoints
+            onFinished: {
+                map.routeCollection.set( routeList )
+                map.centerOnRouteList( routeList )
+            }
         }
-    }
-
-    RoutingService {
-        id: routing
-        type: Route.Type.Fastest
-        transportMode: Route.Car
-        waypoints: routingWaypoints
-        onFinished: {
-            map.routeCollection.set( routeList )
-            map.centerOnRouteList( routeList )
-        }
-    }
-
-
     }
     function distance( meters ){
         return meters >= 1000 ? ( meters / 1000. ).toFixed( 3 ) + "km"
