@@ -33,6 +33,14 @@ Rectangle{
         }
     }
 
+    Timer {
+        id: searchTimer_2
+        interval: 500
+        onTriggered: {
+            searchService_2.searchNow();
+        }
+    }
+
     SearchService {
         id: searchService
         filter: searchBar.text
@@ -42,6 +50,21 @@ Rectangle{
 
         function searchNow() {
             searchTimer.stop();
+            cancel();
+            referencePoint = map.cursorWgsPosition();
+            search();
+        }
+    }
+
+    SearchService {
+        id: searchService_2
+        filter: searchBar_2.text
+        searchMapPOIs: true
+        searchAddresses: true
+        limit: 10
+
+        function searchNow() {
+            searchTimer_2.stop();
             cancel();
             referencePoint = map.cursorWgsPosition();
             search();
@@ -147,8 +170,8 @@ Rectangle{
                 id: searchBar_2
                 Layout.fillWidth: true
                 placeholderText: qsTr( "Where would you like to go?" )
-                onTextChanged: searchTimer.restart()
-                onEditingFinished: searchService.searchNow()
+                onTextChanged: searchTimer_2.restart()
+                onEditingFinished: searchService_2.searchNow()
             }
 
             Rectangle {
@@ -160,7 +183,7 @@ Rectangle{
                     id: searchList_2
                     anchors.fill: parent
                     clip: true
-                    model: searchService
+                    model: searchService_2
                     delegate: Item {
                         height: row_2.height
                         Rectangle {
@@ -188,7 +211,7 @@ Rectangle{
                                 Layout.fillWidth: true
                                 Text {
                                     Layout.fillWidth: true
-                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService.referencePoint ) ) + ")"
+                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService_2.referencePoint ) ) + ")"
                                     color: "white"
                                     font.pixelSize: 16
                                     wrapMode: Text.WrapAnywhere
@@ -208,9 +231,9 @@ Rectangle{
                             onClicked: {
                                 searchList_2.currentIndex = index
                                 var landmark = landmarkComponent.createObject( routingWaypoints );
-                                landmark.coordinates = searchService.get( index ).coordinates
+                                landmark.coordinates = searchService_2.get( index ).coordinates
                                 routingWaypoints.append( landmark );
-                                map.centerOnCoordinates( searchService.get( index ).coordinates, zoomValue );
+                                map.centerOnCoordinates( searchService_2.get( index ).coordinates, zoomValue );
                                 searchBar_2.focus = true;
                             }
                         }
