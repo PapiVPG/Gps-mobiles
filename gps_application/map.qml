@@ -1,20 +1,14 @@
 import QtQuick 2.12
-//import QtLocation 5.11
-//import QtPositioning 5.11
 import GeneralMagic 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle{
-    property int zoomValue: 70
-
-    LandmarkList {
-        id: routingWaypoints
-    }
-    Component {
-        id: landmarkComponent
-        Landmark {}
-    }
+    id: main
+    property int zoom_value: 70
+    property int pixel_size: 16
+    property int button_margins: 5
+    property int layout_margins: 15
 
     Component.onCompleted: {
         ServicesManager.logLevel = ServicesManager.Error;
@@ -28,17 +22,7 @@ Rectangle{
     Timer {
         id: searchTimer
         interval: 500
-        onTriggered: {
-            searchService.searchNow();
-        }
-    }
-
-    Timer {
-        id: searchTimer_2
-        interval: 500
-        onTriggered: {
-            searchService_2.searchNow();
-        }
+        onTriggered: searchBar.focus ? searchService.searchNow() : searchService_2.searchNow()
     }
 
     SearchService {
@@ -64,218 +48,201 @@ Rectangle{
         limit: 10
 
         function searchNow() {
-            searchTimer_2.stop();
+            searchTimer.stop();
             cancel();
             referencePoint = map.cursorWgsPosition();
             search();
         }
     }
 
-
     MapView {
         id: map
         anchors.fill: parent
         viewAngle: 25
-        zoomLevel: zoomValue
+        zoomLevel: zoom_value
         cursorVisibility: false
 
+        LandmarkList {
+            id: routingWaypoints
+        }
+        Component {
+            id: landmarkComponent
+            Landmark {}
+        }
+
+        Rectangle {
+            id: searchBar_layout
+            anchors {
+                left: parent.left
+                right: parent. right
+                top: parent.top
+            }
+            height: 120
+            color: "#40a347"
+            radius: 10
+        }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.topMargin: 15
-            anchors.leftMargin: 15
-            anchors.rightMargin: 15
-            anchors.bottomMargin: 30
+            anchors.topMargin: layout_margins
+            anchors.leftMargin: layout_margins
+            anchors.rightMargin: layout_margins
+            anchors.bottomMargin: layout_margins * 2
 
             TextField {
                 id: searchBar
                 Layout.fillWidth: true
-                placeholderText: qsTr( "Where would you like to go?" )
+                placeholderText: qsTr( "Where are we starting?" )
                 onTextChanged: searchTimer.restart()
                 onEditingFinished: searchService.searchNow()
-            }
-
-            Rectangle {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                color: Qt.rgba( 0, 0, 0, 0.5 )
-                visible: searchBar.focus
-                ListView {
-                    id: searchList
-                    anchors.fill: parent
-                    clip: true
-                    model: searchService
-                    delegate: Item {
-                        height: row.height
-                        Rectangle {
-                            width: searchList.width
-                            height: row.height
-                            opacity: 0.6
-                            visible: searchList.currentIndex == index
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "lightsteelblue" }
-                                GradientStop { position: 0.5; color: "blue" }
-                                GradientStop { position: 1.0; color: "lightsteelblue" }
-                            }
-                        }
-                        RowLayout {
-                            id: row
-                            IconView {
-                                iconSource: landmark.icon
-                                Layout.maximumHeight: row.height
-                                Layout.maximumWidth: row.height
-                                width: height
-                                height: row.height
-                            }
-                            ColumnLayout {
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService.referencePoint ) ) + ")"
-                                    color: "white"
-                                    font.pixelSize: 16
-                                    wrapMode: Text.WrapAnywhere
-                                }
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: landmark.description
-                                    color: "white"
-                                    font.pixelSize: 14
-                                    font.italic: true
-                                    wrapMode: Text.WrapAnywhere
-                                }
-                            }
-                        }
-                        MouseArea {
-                            anchors.fill: row
-                            onClicked: {
-                                searchList.currentIndex = index
-                                var landmark = landmarkComponent.createObject( routingWaypoints );
-                                landmark.coordinates = searchService.get( index ).coordinates
-                                routingWaypoints.append( landmark );
-                                map.centerOnCoordinates( searchService.get( index ).coordinates, zoomValue );
-                                searchBar.focus = true;
-                            }
-                        }
-                    }
-                }
-            }
-            Item {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
             }
 
             TextField {
                 id: searchBar_2
                 Layout.fillWidth: true
                 placeholderText: qsTr( "Where would you like to go?" )
-                onTextChanged: searchTimer_2.restart()
+                onTextChanged: searchTimer.restart()
                 onEditingFinished: searchService_2.searchNow()
             }
 
-            Rectangle {
+            Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                color: Qt.rgba( 0, 0, 0, 0.5 )
-                visible: searchBar_2.focus
-                ListView {
-                    id: searchList_2
-                    anchors.fill: parent
-                    clip: true
-                    model: searchService_2
-                    delegate: Item {
-                        height: row_2.height
-                        Rectangle {
-                            width: searchList_2.width
-                            height: row_2.height
-                            opacity: 0.6
-                            visible: searchList_2.currentIndex == index
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "lightsteelblue" }
-                                GradientStop { position: 0.5; color: "blue" }
-                                GradientStop { position: 1.0; color: "lightsteelblue" }
-                            }
-                        }
-                        RowLayout {
-                            id: row_2
-                            IconView {
-                                iconSource: landmark.icon
-                                Layout.maximumHeight: row_2.height
-                                Layout.maximumWidth: row_2.height
-                                width: height
-                                height: row_2.height
-                            }
-                            ColumnLayout {
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService_2.referencePoint ) ) + ")"
-                                    color: "white"
-                                    font.pixelSize: 16
-                                    wrapMode: Text.WrapAnywhere
-                                }
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: landmark.description
-                                    color: "white"
-                                    font.pixelSize: 14
-                                    font.italic: true
-                                    wrapMode: Text.WrapAnywhere
-                                }
-                            }
-                        }
-                        MouseArea {
-                            anchors.fill: row_2
-                            onClicked: {
-                                searchList_2.currentIndex = index
-                                var landmark = landmarkComponent.createObject( routingWaypoints );
-                                landmark.coordinates = searchService_2.get( index ).coordinates
-                                routingWaypoints.append( landmark );
-                                map.centerOnCoordinates( searchService_2.get( index ).coordinates, zoomValue );
-                                searchBar_2.focus = true;
-                            }
-                        }
-                    }
-                }
             }
+        }
 
-            RowLayout {
-                Button {
-                    enabled: searchService.length
-                    text: "Highlight list on the map "
-                    onClicked:  {
-                        map.highlightLandmarkList( searchService )
-                    }
+        Rectangle {
+            anchors {
+                left: parent.left
+                right: parent. right
+                top: searchBar_layout.bottom
+            }
+            height: main.height
+            color: Qt.rgba( 0, 0, 0, 0.5 )
+            visible: searchBar.focus || searchBar_2.focus
+            radius: 10
+            ListView {
+                id: searchList
+                anchors.fill: parent
+                clip: true
+                model: {
+                    if( searchBar.focus )
+                        searchService
+                    else
+                        searchService_2
                 }
-                Button {
-                    text: "Hide Highlighted list"
-                    onClicked: map.hideHighlights()
+                delegate: Item {
+                    height: row.height
+                    Rectangle {
+                        width: searchList.width
+                        height: row.height
+                        opacity: 0.6
+                        visible: searchList.currentIndex == index
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: "lightsteelblue" }
+                            GradientStop { position: 0.5; color: "blue" }
+                            GradientStop { position: 1.0; color: "lightsteelblue" }
+                        }
+                    }
+                    RowLayout {
+                        id: row
+                        IconView {
+                            iconSource: landmark.icon
+                            Layout.maximumHeight: row.height
+                            Layout.maximumWidth: row.height
+                            width: height
+                            height: row.height
+                        }
+                        ColumnLayout {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Text {
+                                Layout.fillWidth: true
+                                text: landmark.name + " (" + distance( landmark.coordinates.distance( searchService.referencePoint ) ) + ")"
+                                color: "white"
+                                font.pixelSize: pixel_size
+                                wrapMode: Text.WrapAnywhere
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: landmark.description
+                                color: "white"
+                                font.pixelSize: pixel_size - 2
+                                font.italic: true
+                                wrapMode: Text.WrapAnywhere
+                            }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: row
+                        onClicked: {
+                            searchList.currentIndex = index
+                            var landmark = landmarkComponent.createObject( routingWaypoints );
+
+                            if( searchBar.focus ){
+                                landmark.coordinates = searchService.get( index ).coordinates
+                                routingWaypoints.append( landmark )
+                                searchBar.text = searchService.get( index ).name
+                                map.centerOnCoordinates( searchService.get( index ).coordinates, zoom_value )
+                                searchBar.focus = false
+                            } else {
+                                landmark.coordinates = searchService_2.get( index ).coordinates
+                                routingWaypoints.append( landmark )
+                                searchBar_2.text = searchService_2.get( index ).name
+                                map.centerOnCoordinates( searchService_2.get( index ).coordinates, zoom_value )
+                                searchBar_2.focus = false
+                            }
+                        }
+                    }
                 }
             }
         }
 
         Button {
+            id: start_button
             anchors {
                 left: parent.left
                 bottom: parent.bottom
-                margins: 5
+                right: parent.right
+                margins: button_margins
             }
+            visible: routingWaypoints.length == 2
             enabled: !navigation.active && routingWaypoints.length > 1
-            text: "button"
-            onClicked: routing.update()
+            text: "->"
+            onClicked: {
+                routing.cancel()
+                routing.update()
+                searchBar_2.visible = false
+                searchBar.visible = false
+                searchBar_layout.visible = false
+                routingWaypoints.clear()
+            }
         }
 
         Button {
+            id: start_navigation_button
             anchors {
+                left: parent.left
                 right: parent.right
                 bottom: parent.bottom
-                margins: 5
+                margins: button_margins
             }
-            enabled: map.routeCollection.mainRoute.valid
+            visible: false
+            enabled: start_navigation_button.visible
             text: navigation.active ? "Stop" : "Start Navigation"
-            onClicked: navigation.active = !navigation.active
+            onClicked: {
+                navigation.active = !navigation.active
+                if( !navigation.active ) {
+                    searchBar_2.visible = true
+                    searchBar.visible = true
+                    searchBar_layout.visible = true
+                    start_navigation_button.visible = false
+                    map.routeCollection.remove( map.routeCollection.mainRoute )
+                    map.routeCollection.clear()
+                    searchBar.clear()
+                    searchBar_2.clear()
+                }
+            }
         }
 
         Rectangle {
@@ -290,7 +257,6 @@ Rectangle{
 
             RowLayout {
                 anchors.fill: parent
-
                 DynamicIconView {
                     Layout.fillHeight: true
                     width: height
@@ -303,7 +269,7 @@ Rectangle{
 
                 Label {
                     Layout.fillWidth: true
-                    font.pixelSize: 16
+                    font.pixelSize: pixel_size
                     text: { navigation.currentInstruction.nextStreetName
                         + " ( " + distance( navigation.currentInstruction.distanceToNextTurn ) + " )"
                     }
@@ -343,9 +309,11 @@ Rectangle{
             onFinished: {
                 map.routeCollection.set( routeList )
                 map.centerOnRouteList( routeList )
+                start_navigation_button.visible = true
             }
         }
     }
+
     function distance( meters ){
         return meters >= 1000 ? ( meters / 1000. ).toFixed( 3 ) + "km"
                               : meters.toFixed( 0 ) + "m"
